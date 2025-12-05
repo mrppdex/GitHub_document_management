@@ -17,7 +17,8 @@ import {
   Settings,
   Plus,
   UploadCloud,
-  X
+  X,
+  HelpCircle
 } from 'lucide-react';
 
 // --- MOCK DATA FOR DEMO MODE ---
@@ -71,6 +72,41 @@ const Notification = ({ message, type, onClose }) => {
       {type === 'error' ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
       <span>{message}</span>
       <button onClick={onClose} className="ml-4 font-bold hover:opacity-75">×</button>
+    </div>
+  );
+};
+
+const TokenHelpModal = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="px-6 py-4 border-b bg-slate-50 flex justify-between items-center">
+          <h3 className="font-bold text-slate-800">How to get a Personal Access Token</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700">×</button>
+        </div>
+        <div className="p-6 text-sm text-slate-600 space-y-4">
+          <p>To connect to private repositories or push changes, you need a GitHub Personal Access Token.</p>
+          <ol className="list-decimal pl-5 space-y-2">
+            <li>Go to <strong>GitHub Settings</strong> {'>'} <strong>Developer settings</strong>.</li>
+            <li>Select <strong>Personal access tokens</strong> {'>'} <strong>Tokens (classic)</strong>.</li>
+            <li>Click <strong>Generate new token (classic)</strong>.</li>
+            <li>Give it a note (e.g., "Repo Manager").</li>
+            <li>Select the <strong>repo</strong> scope (Full control of private repositories).</li>
+            <li>Click <strong>Generate token</strong> and copy it here.</li>
+          </ol>
+          <div className="bg-blue-50 p-3 rounded text-blue-800 text-xs">
+            <strong>Note:</strong> Your token is only stored in your browser's memory and is cleared when you refresh.
+          </div>
+        </div>
+        <div className="px-6 py-4 bg-slate-50 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-bold text-sm shadow-sm"
+          >
+            Got it
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -131,8 +167,8 @@ export default function App() {
   // --- STATE ---
   // Config
   const [config, setConfig] = useState({
-    owner: '',
-    repo: '',
+    owner: 'pawelpiela-lilly',
+    repo: 'claude_skills',
     token: '',
     mode: 'demo' // 'demo' or 'live'
   });
@@ -160,6 +196,7 @@ export default function App() {
   const [showCommitModal, setShowCommitModal] = useState(false);
   const [showNewFileModal, setShowNewFileModal] = useState(false);
   const [newFilePath, setNewFilePath] = useState('');
+  const [showTokenHelp, setShowTokenHelp] = useState(false);
 
   // Refs
   const fileInputRef = useRef(null);
@@ -495,7 +532,12 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Personal Access Token</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center gap-2">
+                    Personal Access Token
+                    <button onClick={() => setShowTokenHelp(true)} className="text-blue-600 hover:text-blue-800" title="How to get a token">
+                      <HelpCircle size={14} />
+                    </button>
+                  </label>
                   <input
                     type="password"
                     className="w-full p-2 border rounded-lg"
@@ -523,6 +565,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 font-sans text-slate-900">
+      {showTokenHelp && <TokenHelpModal onClose={() => setShowTokenHelp(false)} />}
       {/* HEADER */}
       <header className="bg-white border-b px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
